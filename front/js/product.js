@@ -10,6 +10,8 @@ let title = document.querySelector('#title');
 let price = document.querySelector('#price');
 let description = document.querySelector('#description');
 let colors = document.querySelector('#colors');
+let quantity = document.querySelector('#quantity');
+
 
  const promiseListKanap =  fetch("http://localhost:3000/api/products/" + id);
 
@@ -42,4 +44,60 @@ let colors = document.querySelector('#colors');
     }
 
 })
-    )
+ )
+ .catch(function (err) {
+    console.log("fetch erreur");
+    alert("produit n'est pas disponible pour le moment");
+  }); 
+
+  //Enregistrer le choix de l'utilisateur
+let boutton = document.querySelector('#addToCart');
+boutton.addEventListener("click", () => {
+    let colors = document.getElementById("colors").value; 
+    let quantity = Number(document.getElementById("quantity").value);
+    let image = document.querySelector(".item__img").src;
+    let title = document.querySelector('#title');
+    let price = document.querySelector('#price');
+    let description = document.querySelector('#description'); 
+
+    if (!colors) {
+        alert("Veuillez choisir une couleur");
+        return;
+      }
+      if (!(quantity > 0 && quantity < 101)) {
+        alert("Veuillez choisir une quantité entre 1 et 100");
+        return;
+      }
+      //sauvegarder dans le localStorage
+      let information = {
+          id,
+          colors,
+          quantity,
+          title,
+          price,
+          description,
+          image, 
+      };
+      console.log(information);
+
+      /*Convertir du Json en JS/ou l'inverse
+      Le local storage lit que les chaînes de caractères et non les tableaux donc cela permet de transformer en chaine de caractère, sinon la lecture serait (objet,object)
+      A l'inverse cela permet de transformer la chaine de caractère en objet*/
+      let saveProduct = JSON.parse(localStorage.getItem("product"));
+        if (!saveProduct) {
+         saveProduct = [];
+         saveProduct.push(information);
+        } else {
+         for (let p = 0; p < saveProduct.length; p++) {
+         if (saveProduct[p].id == id && saveProduct[p].colors == colors) {
+        saveProduct[p].quantity += quantity;
+        localStorage.setItem("product", JSON.stringify(saveProduct));
+        return;
+      }
+    }
+    saveProduct.push(information);
+  }
+  localStorage.setItem("product", JSON.stringify(saveProduct)); 
+})
+
+  
