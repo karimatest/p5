@@ -56,9 +56,9 @@ boutton.addEventListener("click", () => {
     let colors = document.getElementById("colors").value; 
     let quantity = Number(document.getElementById("quantity").value);
     let image = document.querySelector(".item__img").src;
-    let title = document.querySelector('#title');
-    let price = document.querySelector('#price');
-    let description = document.querySelector('#description'); 
+    let title = document.querySelector('#title').textContent;
+    let price = document.querySelector('#price').textContent;
+    let description = document.querySelector('#description').textContent; 
 
     if (!colors) {
         alert("Veuillez choisir une couleur");
