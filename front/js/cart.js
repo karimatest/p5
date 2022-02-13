@@ -16,63 +16,43 @@ if (saveProduct === null || saveProduct == 0) {
         fetch("http://localhost:3000/api/products/" + saveProduct[k].id)
             .then(response => response.json()
                 .then(data => {
-                    addCanape(saveProduct[k], data)
-                    //panier.innerHTML += `
-                    //<article class="cart__item" data-id="${saveProduct[k].id}" data-color="${saveProduct[k].colors}">
-                    // <div class="cart__item__img">
-                    // <img src=${data.imageUrl} alt=${data.altTxt}>
-                    //  </div>
-                    // <div class="cart__item__content">
-                    // <div class="cart__item__content__description">
-                    // <h2>${data.name}</h2>
-                    //  <p>${saveProduct[k].colors}</p>
-                    //   <p>${data.price}€</p>
-                    //  </div>
-                    // <div class="cart__item__content__settings">
-                    //  <div class="cart__item__content__settings__quantity">
-                    //  <p>Qté : </p>
-                    // <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${saveProduct[k].quantity}>
-                    //    </div>
-                    //<div class="cart__item__content__settings__delete">
-                    //<p class="deleteItem">Supprimer</p>
-                    //</div>
-                    //</div>
-                    // </div>
-                    //  </article>`;
+                   addCanape(saveProduct[k], data)
 
-                }
-                ))
+     }      
+     ))
     };
 }
+
 function addCanape(localStorageData, apiData) {
     let article = document.createElement('article')
+    article.className = "cart__item";
     article.dataset.id = localStorageData.id
     article.dataset.colors = localStorageData.colors
     panier.append(article);
 
     let productDivImg = document.createElement("div");
-    article.appendChild(productDivImg);
     productDivImg.className = "cart__item__img";
+    article.appendChild(productDivImg);
 
     // Insertion de l'image
     let image = document.createElement("img");
-    productDivImg.appendChild(image);
     image.src = apiData.imageUrl;
     image.alt = apiData.altTxt;
-
+    productDivImg.appendChild(image);
+    
     // Insertion de l'élément "div" pour la description produit
     let productItemContent = document.createElement("div");
-    article.appendChild(productItemContent);
     productItemContent.className = "cart__item__content";
+    article.appendChild(productItemContent);
 
     // Insertion de l'élément "div"
     let productItemContentTitlePrice = document.createElement("div");
-    productItemContent.appendChild(productItemContentTitlePrice);
     productItemContentTitlePrice.className = "cart__item__ccontent__titlePrice";
+    productItemContent.appendChild(productItemContentTitlePrice);
 
     let name = document.createElement('h2')
-    productItemContentTitlePrice.appendChild(name);
     name.textContent = apiData.name
+    productItemContentTitlePrice.appendChild(name);
 
     // Insertion de la couleur
     let productColors = document.createElement("p");
@@ -82,23 +62,23 @@ function addCanape(localStorageData, apiData) {
 
     // Insertion du prix
     let productPrice = document.createElement("p");
-    productItemContentTitlePrice.appendChild(productPrice);
     productPrice.textContent = apiData.price + " €";
+    productItemContentTitlePrice.appendChild(productPrice);
 
     // Insertion de l'élément "div"
     let productItemContentSettings = document.createElement("div");
-    productItemContent.appendChild(productItemContentSettings);
     productItemContentSettings.className = "cart__item__content__settings";
+    productItemContent.appendChild(productItemContentSettings);
 
     // Insertion de l'élément "div"
     let productItemContentSettingsQuantity = document.createElement("div");
-    productItemContentSettings.appendChild(productItemContentSettingsQuantity);
     productItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
+    productItemContentSettings.appendChild(productItemContentSettingsQuantity);
 
     // Insertion de "Qté : "
     let productQty = document.createElement("p");
-    productItemContentSettingsQuantity.appendChild(productQty);
     productQty.textContent = "Qté : ";
+    productItemContentSettingsQuantity.appendChild(productQty);
 
     // Insertion de la quantité
     let buttonAdd = document.createElement("input");
@@ -137,6 +117,137 @@ function addCanape(localStorageData, apiData) {
       alert('votre article a bien été supprimer.');
 
     })
-    
+
+    /*Quantité à modifier page panier*/
+   
+    for(let m = 0; m < buttonAdd.length; m++){
+    buttonAdd.addEventListener("change",(event) => {
+        let article = event.target.closest("article");
+        let id = article.dataset.id
+        let colors = article.dataset.colors
+        let quantity = parseInt(buttonAdd[m].value);
+        for(let n = 0; n < saveProduct.length; n++){
+            if(saveProduct[n].id == id && saveProduct[n].color == colors){
+                saveProduct[n].quantity = quantity;
+                localStorage.setItem("product", JSON.stringify(saveProduct)); 
+               calculTotal()
+
+            }
+        }
+    })
+    }
 }
- 
+function calculTotal() {
+    let saveProduct = JSON.parse(localStorage.getItem("product"));
+    let totalQuantity = 0;
+    let totalPrice = 0;
+  
+    for (let pushPrice of saveProduct) {
+      totalPrice += pushPrice.price * pushPrice.quantity;
+      totalQuantity += pushPrice.quantity;
+      console.log(pushPrice);
+    }
+    document.getElementById("totalQuantity").textContent = totalQuantity;
+    document.getElementById("totalPrice").textContent = totalPrice;
+  }
+  
+  calculTotal();   
+  
+
+ //-------------Formulaire --------------------//
+
+let form = document.querySelector("cart__order__form");
+let firstName = document.getElementById("firstName");
+let lastName = document.getElementById("lastName");
+let address = document.getElementById("address");
+let city = document.getElementById("city");
+let email = document.getElementById("email");
+let commander = document.getElementById("order");
+
+//creation expression régulière  FirstName //
+firstName.addEventListener('change', function(){
+    validFirstName(this)
+})
+const validFirstName = function(inputFirstName) {
+    let FirstNameRegexExp = new RegExp ("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
+    let firstNameErrorMsg = inputFirstName.nextElementSibling;
+    if (FirstNameRegexExp.test(inputFirstName.value)) {
+      firstNameErrorMsg.innerHTML = "prénom Valide ";
+    }else{
+      firstNameErrorMsg.innerHTML = "Veuillez renseigner ce champ" 
+    }
+};
+
+//creation expression régulière lastName //
+lastName.addEventListener('change' , function (){
+    validLastName(this)
+})
+const validLastName = function(inputLastName){
+    let LastNameRegexExp = new RegExp("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
+    let lastNameErrorMsg = inputLastName.nextElementSibling;
+    if(LastNameRegexExp.test(inputLastName.value)){
+        lastNameErrorMsg.innerHTML = "Nom valide";   
+    }else{
+        lastNameErrorMsg.innerHTML =" Veuillez renseigner ce champ !" ;
+    }
+};
+//creation expression régulière Adresse //
+address.addEventListener('change',function (){
+    validAddress(this)
+})
+const validAddress = function(inputAddress){
+    let AddressRegexExp = new RegExp("^[0-9]{1,4}[a-zA-ZÀ-Ÿà-ÿ,'0-9\\s]+$" , 'g');
+    let addressErrorMsg = inputAddress.nextElementSibling;
+    if(AddressRegexExp.test(inputAddress.value)){
+        addressErrorMsg.textContent = "Adresse valide";
+    }else{
+        addressErrorMsg.textContent = "Veuillez renseigner ce champ"
+    }
+};
+// creation expression régulière Ville //
+city.addEventListener("change", function (){
+    validCity(this)
+})
+const validCity = function(inputCity){
+    let CityRegexExp = new RegExp("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
+    let cityErrorMsg = inputCity.nextElementSibling;
+    if(CityRegexExp.test(inputCity.value)){
+
+        cityErrorMsg.textContent = "Ville valide";
+    }else{
+        cityErrorMsg.textContent = "Veuillez renseigner ce champ"
+    }
+};
+//creation expression régulière email //
+email.addEventListener("change", function(){
+    validEmail(this)
+})
+const validEmail = function(inputEmail){
+    let EmailRegexExp = new RegExp('^[a-zA-Z0-9ôöáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s-]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$', 'g');
+    let emailErrorMsg = inputEmail.nextElementSibling;
+    if(EmailRegexExp.test(inputEmail.value)){
+        emailErrorMsg.textContent = "Email valide";
+    }else{
+        emailErrorMsg.textContent = "Veuillez renseigner ce champ"
+    }
+};
+function validForm(){
+    const commander = document.getElementById("order");
+    commander.addEventListener('click',(e)=>{
+        e.preventDefault();
+    // je récupère les données du formulaire dand un objet //
+       const contact ={
+           firstName : firstName.value,
+           lastName :lastName.value,
+           adress :adress.value,
+           city :city.value,
+           email : email.value
+       },
+    // construire un tableau d'id dans le localeStorage //
+    let addCanape = [];
+    for(let i = 0; i< saveProduct.length; i ++){
+        articles.push(saveProduct[i].id);
+    }
+    console.log(articles);
+    })
+}
