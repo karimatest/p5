@@ -28,7 +28,7 @@ function addCanape(localStorageData, apiData) {
     article.className = "cart__item";
     article.dataset.id = localStorageData.id
     article.dataset.colors = localStorageData.colors
-    panier.append(article);
+    panier.appendChild(article);
 
     let productDivImg = document.createElement("div");
     productDivImg.className = "cart__item__img";
@@ -113,7 +113,7 @@ function addCanape(localStorageData, apiData) {
 
         localStorage.setItem("product", JSON.stringify(products));
         article.remove();
-
+         calculTotal();
       alert('votre article a bien été supprimer.');
 
     })
@@ -139,15 +139,15 @@ function addCanape(localStorageData, apiData) {
 }
 function calculTotal() {
     let saveProduct = JSON.parse(localStorage.getItem("product"));
-    let totalQuantity = 0;
+    let fullQuantity = 0;
     let totalPrice = 0;
   
-    for (let pushPrice of saveProduct) {
-      totalPrice += pushPrice.price * pushPrice.quantity;
-      totalQuantity += pushPrice.quantity;
-      console.log(pushPrice);
+    for (let productPrice of saveProduct) {
+      totalPrice += productPrice.price * productPrice.quantity;
+      fullQuantity += productPrice.quantity;
+      console.log(productPrice);
     }
-    document.getElementById("totalQuantity").textContent = totalQuantity;
+    document.getElementById("totalQuantity").textContent = fullQuantity;
     document.getElementById("totalPrice").textContent = totalPrice;
   }
   
@@ -172,9 +172,11 @@ const validFirstName = function(inputFirstName) {
     let FirstNameRegexExp = new RegExp ("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
     let firstNameErrorMsg = inputFirstName.nextElementSibling;
     if (FirstNameRegexExp.test(inputFirstName.value)) {
-      firstNameErrorMsg.innerHTML = "prénom Valide ";
+      firstNameErrorMsg.textContent = "prénom Valide ";
+      return true
     }else{
-      firstNameErrorMsg.innerHTML = "Veuillez renseigner ce champ" 
+      firstNameErrorMsg.textContent = "Veuillez renseigner ce champ";
+      return false
     }
 };
 
@@ -186,9 +188,11 @@ const validLastName = function(inputLastName){
     let LastNameRegexExp = new RegExp("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
     let lastNameErrorMsg = inputLastName.nextElementSibling;
     if(LastNameRegexExp.test(inputLastName.value)){
-        lastNameErrorMsg.innerHTML = "Nom valide";   
+        lastNameErrorMsg.textContent = "Nom valide";
+        return true   
     }else{
-        lastNameErrorMsg.innerHTML =" Veuillez renseigner ce champ !" ;
+        lastNameErrorMsg.textContent =" Veuillez renseigner ce champ !";
+        return false
     }
 };
 //creation expression régulière Adresse //
@@ -200,8 +204,10 @@ const validAddress = function(inputAddress){
     let addressErrorMsg = inputAddress.nextElementSibling;
     if(AddressRegexExp.test(inputAddress.value)){
         addressErrorMsg.textContent = "Adresse valide";
+        return true
     }else{
-        addressErrorMsg.textContent = "Veuillez renseigner ce champ"
+        addressErrorMsg.textContent = "Veuillez renseigner ce champ";
+        return false
     }
 };
 // creation expression régulière Ville //
@@ -212,10 +218,11 @@ const validCity = function(inputCity){
     let CityRegexExp = new RegExp("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
     let cityErrorMsg = inputCity.nextElementSibling;
     if(CityRegexExp.test(inputCity.value)){
-
         cityErrorMsg.textContent = "Ville valide";
+        return true
     }else{
-        cityErrorMsg.textContent = "Veuillez renseigner ce champ"
+        cityErrorMsg.textContent = "Veuillez renseigner ce champ";
+        return false
     }
 };
 //creation expression régulière email //
@@ -227,27 +234,54 @@ const validEmail = function(inputEmail){
     let emailErrorMsg = inputEmail.nextElementSibling;
     if(EmailRegexExp.test(inputEmail.value)){
         emailErrorMsg.textContent = "Email valide";
+        return true
     }else{
-        emailErrorMsg.textContent = "Veuillez renseigner ce champ"
+        emailErrorMsg.textContent = "Veuillez renseigner ce champ";
+        return false
     }
 };
 function validForm(){
     const commander = document.getElementById("order");
     commander.addEventListener('click',(e)=>{
         e.preventDefault();
-    // je récupère les données du formulaire dand un objet //
-       const contact ={
-           firstName : firstName.value,
-           lastName :lastName.value,
-           adress :adress.value,
-           city :city.value,
-           email : email.value
-       },
-    // construire un tableau d'id dans le localeStorage //
-    let addCanape = [];
-    for(let i = 0; i< saveProduct.length; i ++){
-        articles.push(saveProduct[i].id);
-    }
-    console.log(articles);
-    })
+            
+            const contact ={
+                firstName : firstName.value,
+                lastName :lastName.value,
+                address :address.value,
+                city :city.value,
+                email : email.value
+            }
+       localStorage.setItem("contact", JSON.stringify(contact));
+        
+       let products = [];
+       saveProduct.forEach((element) => products.push(element.id));
+       
+       const objet = {
+           contact,
+           products
+       }
+       console.log(objet);
+       // j'envois le formulaire et localStorag (objet) au serveur//
+        const options = {
+            method : 'post',
+            body : JSON.stringify(objet),
+            headers: { 
+                'Content-Type': 'application/json',
+              }
+        }
+
+        fetch("http://localhost:3000/api/products/order", options)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            let orderId = data.orderId;
+            window.location.href = `./confirmation.html?id=${orderId}`;
+           console.log(orderId);
+        
+});
+   
+});
 }
+// fin de l'envoie du formulaire //
+validForm ();
