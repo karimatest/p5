@@ -139,15 +139,15 @@ function addCanape(localStorageData, apiData) {
 }
 function calculTotal() {
     let saveProduct = JSON.parse(localStorage.getItem("product"));
-    let fullQuantity = 0;
+    let totalQuantity = 0;
     let totalPrice = 0;
   
     for (let productPrice of saveProduct) {
       totalPrice += productPrice.price * productPrice.quantity;
-      fullQuantity += productPrice.quantity;
+      totalQuantity += productPrice.quantity;
       console.log(productPrice);
     }
-    document.getElementById("totalQuantity").textContent = fullQuantity;
+    document.getElementById("totalQuantity").textContent = totalQuantity;
     document.getElementById("totalPrice").textContent = totalPrice;
   }
   
