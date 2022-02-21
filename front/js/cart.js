@@ -94,7 +94,7 @@ function addCanape(localStorageData, apiData) {
     let productItemContentSettingsDelete = document.createElement("div");
     productItemContentSettings.appendChild(productItemContentSettingsDelete);
     productItemContentSettingsDelete.className = "cart__item__content__settings__delete";
-
+    // insertion du button supprimer //
     let button = document.createElement("p");
     productItemContentSettingsDelete.appendChild(button);
     button.className = "deleteItem";
@@ -120,14 +120,13 @@ function addCanape(localStorageData, apiData) {
 
     /*Quantité à modifier page panier*/
    
-    for(let m = 0; m < buttonAdd.length; m++){
     buttonAdd.addEventListener("change",(event) => {
         let article = event.target.closest("article");
         let id = article.dataset.id
         let colors = article.dataset.colors
-        let quantity = parseInt(buttonAdd[m].value);
+        let quantity = parseInt(buttonAdd.value);
         for(let n = 0; n < saveProduct.length; n++){
-            if(saveProduct[n].id == id && saveProduct[n].color == colors){
+            if(saveProduct[n].id == id && saveProduct[n].colors == colors){
                 saveProduct[n].quantity = quantity;
                 localStorage.setItem("product", JSON.stringify(saveProduct)); 
                calculTotal()
@@ -136,7 +135,7 @@ function addCanape(localStorageData, apiData) {
         }
     })
     }
-}
+//fonction du prix totale / quantités totale du panier //
 function calculTotal() {
     let saveProduct = JSON.parse(localStorage.getItem("product"));
     let totalQuantity = 0;
@@ -145,7 +144,6 @@ function calculTotal() {
     for (let productPrice of saveProduct) {
       totalPrice += productPrice.price * productPrice.quantity;
       totalQuantity += productPrice.quantity;
-      console.log(productPrice);
     }
     document.getElementById("totalQuantity").textContent = totalQuantity;
     document.getElementById("totalPrice").textContent = totalPrice;
@@ -215,7 +213,7 @@ city.addEventListener("change", function (){
     validCity(this)
 })
 const validCity = function(inputCity){
-    let CityRegexExp = new RegExp("^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$", "g");
+    let CityRegexExp = new RegExp("^[a-zA-Z ,.'-]+$");
     let cityErrorMsg = inputCity.nextElementSibling;
     if(CityRegexExp.test(inputCity.value)){
         cityErrorMsg.textContent = "Ville valide";
@@ -240,11 +238,21 @@ const validEmail = function(inputEmail){
         return false
     }
 };
+//validation des inputs//
+function validInputs() {
+    return validFirstName(document.querySelector('#firstName')) && validLastName(document.querySelector('#lastName')) && validAddress(document.querySelector('#address')) && validCity(document.querySelector('#city')) && validEmail(document.querySelector('#email'));
+}
+// validation du formulaire//
 function validForm(){
     const commander = document.getElementById("order");
     commander.addEventListener('click',(e)=>{
         e.preventDefault();
-            
+          if(!validInputs()) {
+              alert('Merci de renseigner tous les champs obligatoire');
+              return false
+        
+          } 
+          //envoie les information dans localStorage //
             const contact ={
                 firstName : firstName.value,
                 lastName :lastName.value,
@@ -253,7 +261,7 @@ function validForm(){
                 email : email.value
             }
        localStorage.setItem("contact", JSON.stringify(contact));
-        
+        // objet contenant les produits et le contact //
        let products = [];
        saveProduct.forEach((element) => products.push(element.id));
        
@@ -261,7 +269,7 @@ function validForm(){
            contact,
            products
        }
-       console.log(objet);
+    
        // j'envois le formulaire et localStorag (objet) au serveur//
         const options = {
             method : 'post',
@@ -277,7 +285,7 @@ function validForm(){
             console.log(data);
             let orderId = data.orderId;
             window.location.href = `./confirmation.html?id=${orderId}`;
-           console.log(orderId);
+    
         
 });
    

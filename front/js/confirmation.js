@@ -6,3 +6,4 @@ function confirmation() {
     document.getElementById("orderId").textContent = id;
 }
 confirmation();
+localStorage.clear();

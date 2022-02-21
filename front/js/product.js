@@ -46,7 +46,6 @@ let quantity = document.querySelector('#quantity');
 })
  )
  .catch(function (err) {
-    console.log("fetch erreur");
     alert("produit n'est pas disponible pour le moment");
   }); 
 
@@ -59,7 +58,7 @@ boutton.addEventListener("click", () => {
     let title = document.querySelector('#title').textContent;
     let price = document.querySelector('#price').textContent;
     let description = document.querySelector('#description').textContent; 
-
+//choisir la couleur et la quantité du produit //
     if (!colors) {
         alert("Veuillez choisir une couleur");
         return;
