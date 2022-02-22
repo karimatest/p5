@@ -119,7 +119,7 @@ function addCanape(localStorageData, apiData) {
     })
 
     /*Quantité à modifier page panier*/
-   
+   //selectionner l'element à modifier en fonction de son id et sa couleur/
     buttonAdd.addEventListener("change",(event) => {
         let article = event.target.closest("article");
         let id = article.dataset.id
