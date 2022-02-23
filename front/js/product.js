@@ -91,12 +91,13 @@ boutton.addEventListener("click", () => {
          if (saveProduct[p].id == id && saveProduct[p].colors == colors) {
         saveProduct[p].quantity += quantity;
         localStorage.setItem("product", JSON.stringify(saveProduct));
-        return;
+        return ;
       }
     }
     saveProduct.push(information);
   }
-  localStorage.setItem("product", JSON.stringify(saveProduct)); 
+  localStorage.setItem("product", JSON.stringify(saveProduct));
+  alert('Le produit a été ajouter au panier');
 })
 
   
