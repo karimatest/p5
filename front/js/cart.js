@@ -8,7 +8,7 @@ let btnDelete = document.querySelector('.deleteItem');
 let quantity = document.getElementsByClassName(".itemQuantity");
 //si le panier est vide
 if (saveProduct === null || saveProduct == 0) {
-    //
+ 
 } else {
     //si le panier n'est pas vide afficher les produits dans le localstorage    
 
@@ -140,6 +140,13 @@ function calculTotal() {
     let saveProduct = JSON.parse(localStorage.getItem("product"));
     let totalQuantity = 0;
     let totalPrice = 0;
+    
+    if(!saveProduct){
+        totalPrice = 0;
+        totalQuantity = 0;
+    alert('Votre panier est vide')
+    return;
+    }
   
     for (let productPrice of saveProduct) {
       totalPrice += productPrice.price * productPrice.quantity;
@@ -148,10 +155,8 @@ function calculTotal() {
     document.getElementById("totalQuantity").textContent = totalQuantity;
     document.getElementById("totalPrice").textContent = totalPrice;
   }
-  
-  calculTotal();   
-  
-
+   calculTotal();   
+ 
  //-------------Formulaire --------------------//
 
 let form = document.querySelector("cart__order__form");
