@@ -108,7 +108,7 @@ function addCanape(localStorageData, apiData) {
         let products = JSON.parse(localStorage.getItem("product"));
 
         products = products.filter(
-            (el) => el.id !== idDelete && el.colors !== colorsDelete
+            (el) => el.id !== idDelete || el.colors !== colorsDelete
         );
 
         localStorage.setItem("product", JSON.stringify(products));
@@ -125,13 +125,14 @@ function addCanape(localStorageData, apiData) {
         let id = article.dataset.id
         let colors = article.dataset.colors
         let quantity = parseInt(buttonAdd.value);
+        let saveProduct = JSON.parse(localStorage.getItem("product"));
         for(let n = 0; n < saveProduct.length; n++){
             if(saveProduct[n].id == id && saveProduct[n].colors == colors){
                 saveProduct[n].quantity = quantity;
                 localStorage.setItem("product", JSON.stringify(saveProduct)); 
                calculTotal()
-
-            }
+               return
+     }
         }
     })
     }
