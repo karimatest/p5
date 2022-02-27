@@ -17,7 +17,8 @@ if (saveProduct === null || saveProduct == 0) {
             .then(response => response.json()
                 .then(data => {
                    addCanape(saveProduct[k], data)
-         calculTotal()
+                   
+                  calculTotal()
      }      
      ))
     };
