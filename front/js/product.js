@@ -72,10 +72,6 @@ boutton.addEventListener("click", () => {
           id,
           colors,
           quantity,
-          title,
-          price,
-          description,
-          image, 
       };
       console.log(information);
 

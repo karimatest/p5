@@ -10,14 +10,14 @@ let quantity = document.getElementsByClassName(".itemQuantity");
 if (saveProduct === null || saveProduct == 0) {
  
 } else {
-    //si le panier n'est pas vide afficher les produits dans le localstorage    
+    //si le panier n'est pas vide afficher les produits du panier    
 
     for (let k = 0; k < saveProduct.length; k++) {
         fetch("http://localhost:3000/api/products/" + saveProduct[k].id)
             .then(response => response.json()
                 .then(data => {
                    addCanape(saveProduct[k], data)
-
+         calculTotal()
      }      
      ))
     };
@@ -28,6 +28,7 @@ function addCanape(localStorageData, apiData) {
     article.className = "cart__item";
     article.dataset.id = localStorageData.id
     article.dataset.colors = localStorageData.colors
+    article.dataset.price = apiData.price
     panier.appendChild(article);
 
     let productDivImg = document.createElement("div");
@@ -62,7 +63,7 @@ function addCanape(localStorageData, apiData) {
 
     // Insertion du prix
     let productPrice = document.createElement("p");
-    productPrice.textContent = apiData.price + " €";
+    productPrice.textContent = apiData.price + "€";
     productItemContentTitlePrice.appendChild(productPrice);
 
     // Insertion de l'élément "div"
@@ -105,13 +106,13 @@ function addCanape(localStorageData, apiData) {
         //Selection de l'element à supprimer en fonction de son id ET sa couleur
         let idDelete = article.dataset.id;
         let colorsDelete = article.dataset.colors;
-        let products = JSON.parse(localStorage.getItem("product"));
+        let saveProduct = JSON.parse(localStorage.getItem("product"));
 
-        products = products.filter(
+        saveProduct = saveProduct.filter(
             (el) => el.id !== idDelete || el.colors !== colorsDelete
         );
 
-        localStorage.setItem("product", JSON.stringify(products));
+        localStorage.setItem("product", JSON.stringify(saveProduct));
         article.remove();
          calculTotal();
       alert('votre article a bien été supprimer.');
@@ -138,20 +139,15 @@ function addCanape(localStorageData, apiData) {
     }
 //fonction du prix totale / quantités totale du panier //
 function calculTotal() {
-    let saveProduct = JSON.parse(localStorage.getItem("product"));
+    let articles  = document.querySelectorAll('article');
     let totalQuantity = 0;
     let totalPrice = 0;
     
-    if(!saveProduct){
-        totalPrice = 0;
-        totalQuantity = 0;
-    alert('Votre panier est vide')
-    return;
-    }
-  
-    for (let productPrice of saveProduct) {
-      totalPrice += productPrice.price * productPrice.quantity;
-      totalQuantity += productPrice.quantity;
+    for (let article of articles) {
+      let articlePrice = parseInt(article.dataset.price);
+      let articleQuantity = parseInt( article.querySelector('input').value);  
+      totalPrice += articlePrice * articleQuantity;
+      totalQuantity += articleQuantity;
     }
     document.getElementById("totalQuantity").textContent = totalQuantity;
     document.getElementById("totalPrice").textContent = totalPrice;
